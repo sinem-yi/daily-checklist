@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实习备战每日清单</title>
+<style>
+:root{
+  --bg:#faf9f7; --card:#ffffff; --line:#e6e3dc; --text:#2c2c2a;
+  --muted:#77756e; --accent:#0f6e56; --accent-soft:#e1f5ee;
+  --warn:#854f0b; --warn-soft:#faeeda; --linux:#185fa5; --linux-soft:#e6f1fb;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; padding:20px 14px 64px; background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:15px; line-height:1.6; -webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap{max-width:720px;margin:0 auto;}
+h1{font-size:20px;font-weight:600;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:13px;margin-bottom:20px;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;}
+.bar{height:8px;background:#efede7;border-radius:4px;overflow:hidden;margin:10px 0 8px;}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .25s;}
+.stat{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);}
+.today{background:var(--warn-soft);border:1px solid #f0dcb4;color:var(--warn);
+  border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px;}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+button{font:inherit;font-size:13px;padding:10px 14px;border:1px solid var(--line);
+  background:#fff;color:var(--text);border-radius:8px;cursor:pointer;}
+button:active{background:#f2f0ea;}
+.week{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+.whead{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;user-select:none;}
+.whead:hover{background:#fbfaf7;}
+.wno{flex:none;width:34px;height:34px;border-radius:8px;background:var(--accent-soft);
+  color:var(--accent);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;}
+.wno.done{background:#d3d1c7;color:#5f5e5a;}
+.wmeta{flex:1;min-width:0;}
+.wtitle{font-size:14px;font-weight:600;}
+.wrange{font-size:12px;color:var(--muted);}
+.wcount{flex:none;font-size:12px;color:var(--muted);}
+.wbody{display:none;border-top:1px solid var(--line);padding:6px 14px 14px;}
+.week.open .wbody{display:block;}
+.wgoal{font-size:13px;color:var(--muted);padding:8px 0 10px;border-bottom:1px dashed var(--line);margin-bottom:6px;}
+.day{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #f2f0ea;cursor:pointer;align-items:flex-start;}
+.day:last-child{border-bottom:none;}
+.cb{flex:none;width:26px;height:26px;margin-top:1px;border:1.5px solid #bdbab2;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;background:#fff;}
+.day.on .cb{background:var(--accent);border-color:var(--accent);}
+.day.lx .cb{border-radius:13px;}
+.day.lx.on .cb{background:var(--linux);border-color:var(--linux);}
+.day.on .cb::after{content:"";width:10px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;
+  transform:rotate(-45deg) translate(1px,-1px);}
+.dtext{flex:1;min-width:0;}
+.day.on .dtext{color:var(--muted);text-decoration:line-through;}
+.dlabel{font-size:12px;font-weight:600;margin-right:6px;color:var(--muted);}
+.day.lx .dlabel{color:var(--linux);}
+.dnote{display:block;font-size:12px;color:var(--muted);margin-top:2px;}
+.next{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;}
+.next h2{font-size:15px;font-weight:600;margin:0 0 8px;}
+.next ul{margin:0;padding-left:18px;color:var(--muted);font-size:13px;}
+.next li{margin-bottom:5px;}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>实习备战每日清单</h1>
+  <div class="sub">2028 届 · 2026.11.02 – 2027.01.24 · 每天一格 30–60 分钟 · 蓝色圆格是 Linux 微任务</div>
+
+  <div class="today" id="today"></div>
+
+  <div class="panel">
+    <div class="bar"><i id="pbar" style="width:0%"></i></div>
+    <div class="stat"><span id="pct">已完成 0 / 72</span><span id="wct">12 周</span></div>
+    <div class="btns">
+      <button onclick="toggleAll()">展开 / 收起全部</button>
+      <button onclick="copyWeek()">复制本周清单</button>
+      <button onclick="resetWeek()">重置本周</button>
+      <button onclick="resetAll()">全部重置</button>
+    </div>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="next">
+    <h2>投递策略（12 月底启动）</h2>
+    <ul>
+      <li><b>主攻</b>：安全服务 / 渗透实习，挑写「经验不限」「实习生亦可」的，不卡届数</li>
+      <li><b>保底</b>：IT 运维实习，门槛低招人多，拿到就去，有经历比没经历强</li>
+      <li><b>别投</b>：JD 写死「2027 届」的岗位，2028 届系统直接筛掉，白费力气</li>
+      <li>寒假 6–8 周偏短，大厂实习多要求 3 个月起；小安服公司寒假缺人，收短期的概率更高</li>
+      <li>拿到是赚，拿不到也不亏：每次面试都是一次免费摸底</li>
+    </ul>
+    <h2 style="margin-top:14px">先别碰</h2>
+    <ul>
+      <li>SRC 挖洞 · CTF 名次 · 内网渗透 · OSCP 等万元证书 · 报培训班</li>
+    </ul>
+  </div>
+
+  <footer>进度保存在本机浏览器，换设备不同步。重要节点记得同步到备忘录。</footer>
+</div>
+
+<script>
+var KEY = "xiaoliang-plan-v2";
+var DAY = ["周一","周二","周三","周四","周五","随时"];
+var PLAN = [
+{w:1,range:"11.02 – 11.08",title:"爬虫仓库起步",goal:"把已有代码变成一个能公开的仓库，不学新技术。",days:[
+ ["确认 GitHub 账号可用","没有就注册，用户名用真名拼音，别用二次元昵称"],
+ ["新建仓库，把 core_crawler.py 放进去","文件在 toolbox 目录里，别连着整个工具箱一起传"],
+ ["写 requirements.txt","内容一行：requests"],
+ ["跑基准测试 workers = 1 / 4 / 8 / 16","每种跑 3 次，取最快那次，记到纸上"],
+ ["把 4 个数字填成表格","发给小布看数字合不合理"],
+ ["Linux：ls / cd / pwd / cat 走一遍","在 Kali 里做，别用图形界面的文件管理器"]]},
+{w:2,range:"11.09 – 11.15",title:"写第一份 README",goal:"给爬虫仓库写一份能见人的 README。",days:[
+ ["写「项目说明 + 能干什么」","照模板填空，不用写得好"],
+ ["写「怎么跑」+ 截一张运行成功的图","截图比文字有用"],
+ ["写「我遇到的问题」三条","乱序、CSV 乱码、字段混淆这三件事"],
+ ["自查：每个数字都真测过吗","答不上来的那行直接删"],
+ ["本周笔记 300 字","发知乎或 CSDN，记做了什么、卡在哪"],
+ ["Linux：用 grep 在日志里找关键字","试试 grep -r 递归搜整个目录"]]},
+{w:3,range:"11.16 – 11.22",title:"仓库二：用户管理 + SQL 注入演示",goal:"把 sqlite_user_lab 整理成第二个公开仓库。",days:[
+ ["盘点代码，挑出能跑通的部分","跑不起来的先删掉，别留烂尾"],
+ ["整理成独立文件夹","路径写死的地方改成相对路径"],
+ ["写 README","重点写「拼接 SQL 会被注入、参数化不会」这个对比"],
+ ["完整跑一遍确认没报错","换个目录或让同学跑更有效"],
+ ["本周笔记 300 字",""],
+ ["Linux：ps / netstat 看进程和端口","搞明白哪个进程占了哪个端口"]]},
+{w:4,range:"11.23 – 11.29",title:"仓库三：端口扫描 / 信息收集",goal:"把 socket_scan_lab 改造成多线程版本。",days:[
+ ["盘点代码",""],
+ ["改成多线程版本","复用爬虫那套 ThreadPoolExecutor 思路"],
+ ["测一次耗时并记录","单线程 vs 多线程的数字"],
+ ["写 README",""],
+ ["月末复盘：三个仓库还差什么",""],
+ ["Linux：chmod 改权限，搞懂 rwx","755 和 777 差在哪，要能讲出来"]]},
+{w:5,range:"11.30 – 12.06",title:"装上 Burp，抓第一个包",goal:"会用 Proxy 和 Repeater 就达标，不要求精通。",days:[
+ ["下载安装 Burp Suite Community","免费版够用"],
+ ["浏览器配代理，抓第一个 HTTP 包","随便一个 http 网站就行"],
+ ["用 Repeater 改一次请求重放","改个参数看响应怎么变"],
+ ["启动 DVWA，抓一次登录请求","你做过的靶场"],
+ ["本周笔记 300 字",""],
+ ["Linux：用 curl 手发一次 HTTP 请求","不靠浏览器，直接看返回的原始内容"]]},
+{w:6,range:"12.07 – 12.13",title:"SQL 注入专项",goal:"PortSwigger 免费靶场，只做 Apprentice 级。",days:[
+ ["读 SQL 注入章节的原理讲解","https://portswigger.net/web-security"],
+ ["做第 1 个 lab",""],
+ ["做第 2 个 lab",""],
+ ["做第 3 个 lab",""],
+ ["写一篇笔记：怎么产生、怎么修",""],
+ ["Linux：ssh 登录 + scp 传文件","在 Kali 和宿主机之间传一次文件"]]},
+{w:7,range:"12.14 – 12.20",title:"XSS 专项 + 仓库公开",goal:"三个仓库亮出来，别等到最后才公开。",days:[
+ ["读 XSS 章节的原理讲解",""],
+ ["做第 1 个 lab",""],
+ ["做第 2 个 lab",""],
+ ["做第 3 个 lab",""],
+ ["三个仓库全部设为 public + 找人对校 README","别人一眼看出的问题你自己看不出来"],
+ ["Linux：写第一个 bash 脚本","把启动爬虫那串命令写进 .sh 里"]]},
+{w:8,range:"12.21 – 12.27",title:"文件上传 / 目录遍历 + 简历框架",goal:"简历要开始搭了，12 月底就要用。",days:[
+ ["读这两类的原理讲解",""],
+ ["做第 1 个 lab",""],
+ ["做第 2 个 lab",""],
+ ["做第 3 个 lab",""],
+ ["搭好简历框架：三个项目经历先填进去","项目经历要占一半篇幅"],
+ ["Linux：crontab 加一个定时任务",""]]},
+{w:9,range:"12.28 – 01.03",title:"简历定稿 + 投递启动",goal:"课结束这周，简历定稿并投出第一批。",days:[
+ ["读 CSRF / SSRF 的原理讲解",""],
+ ["做 1 个 CSRF lab",""],
+ ["做 1 个 SSRF lab",""],
+ ["简历 v1.0 定稿","三个仓库 + lab 记录 + 笔记都写进去"],
+ ["投递第一批：运维岗 3 家 + 安全服务岗 3 家","挑「经验不限」的，写死 2027 届的别投"],
+ ["Linux：awk / sort 处理一列文本",""]]},
+{w:10,range:"01.04 – 01.10",title:"边投边练 + 面试复盘",goal:"投出去之后，每次沟通都要记下来。",days:[
+ ["注册免费 CTF 平台，做第 1 题","Bugku / 攻防世界 / NSSCTF 三选一"],
+ ["做第 2 题","看题解不丢人"],
+ ["每场面试或沟通写一次复盘","没面试就继续刷题"],
+ ["投递第二批",""],
+ ["挑一道题写 100 字记录",""],
+ ["Linux：翻 /var/log 下的系统日志",""]]},
+{w:11,range:"01.11 – 01.17",title:"CVE 复现 + 继续投递",goal:"照着公开 PoC 跑通一个老漏洞。",days:[
+ ["CTF 第 3 题",""],
+ ["找一个有公开 PoC 的老漏洞","例如 Log4j2"],
+ ["照着把 PoC 跑通","跑不通也记下卡在哪"],
+ ["投递第三批",""],
+ ["本周笔记 300 字",""],
+ ["Linux：tcpdump 抓 10 个包看看",""]]},
+{w:12,range:"01.18 – 01.24",title:"收官",goal:"有实习就准备入职，没有就复盘卡在哪一环。",days:[
+ ["整理一份自己的 Linux 命令速查表","可以当第四个仓库，也能写进简历"],
+ ["汇总 12 周笔记，看能不能整理成一篇合集",""],
+ ["拿到实习就列入职清单；没拿到就复盘卡在哪一轮","简历没回？笔试挂？还是面试说不清"],
+ ["继续投递",""],
+ ["12 周复盘：做成了什么、还差什么",""],
+ ["把 Linux 速查表推到 GitHub",""]]}
+];
+
+var state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { state = {}; }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+function curWeek(){
+  var start = new Date(2026,10,2);
+  var now = new Date();
+  var d = Math.floor((now - start) / 86400000);
+  return Math.floor(d / 7) + 1;
+}
+function linkify(s){
+  return s.replace(/(https?:\/\/[^\s，。）、]+)/g,
+    '<a href="$1" target="_blank" rel="noopener" style="color:#185fa5">$1</a>');
+}
+function render(){
+  var html = "", total = 0, done = 0;
+  var cw = curWeek();
+  for (var i=0;i<PLAN.length;i++){
+    var P = PLAN[i], wd = 0, rows = "";
+    for (var j=0;j<P.days.length;j++){
+      var id = P.w + "-" + j;
+      var on = !!state[id];
+      total++; if (on) { done++; wd++; }
+      var arr = P.days[j];
+      var isLx = (j === P.days.length - 1);
+      rows += '<div class="day' + (isLx ? " lx" : "") + (on ? " on" : "") + '" data-id="' + id + '">'
+        + '<div class="cb"></div><div class="dtext"><span class="dlabel">' + DAY[j] + '</span>'
+        + arr[0] + (arr[1] ? '<span class="dnote">' + linkify(arr[1]) + '</span>' : '') + '</div></div>';
+    }
+    var openNow = (P.w === cw) ? " open" : "";
+    html += '<div class="week' + openNow + '" data-w="' + P.w + '">'
+      + '<div class="whead"><div class="wno' + (wd === P.days.length ? ' done' : '') + '">' + P.w + '</div>'
+      + '<div class="wmeta"><div class="wtitle">' + P.title + '</div>'
+      + '<div class="wrange">' + P.range + '</div></div>'
+      + '<div class="wcount">' + wd + '/' + P.days.length + '</div></div>'
+      + '<div class="wbody"><div class="wgoal">' + P.goal + '</div>' + rows + '</div></div>';
+  }
+  document.getElementById("list").innerHTML = html;
+  var pct = total ? Math.round(done * 100 / total) : 0;
+  document.getElementById("pbar").style.width = pct + "%";
+  document.getElementById("pct").textContent = "已完成 " + done + " / " + total;
+  var cwt = (cw >= 1 && cw <= 12) ? ("今天是第 " + cw + " 周 · " + PLAN[cw-1].title)
+    : (cw < 1 ? "还没开始，从 11 月 2 日那周起" : "12 周主线已结束，进入下一阶段");
+  document.getElementById("today").textContent = cwt;
+}
+
+document.getElementById("list").addEventListener("click", function(e){
+  var head = e.target.closest(".whead");
+  if (head){ head.parentNode.classList.toggle("open"); return; }
+  var d = e.target.closest(".day");
+  if (d){
+    var id = d.getAttribute("data-id");
+    state[id] = !state[id];
+    if (!state[id]) delete state[id];
+    save(); render();
+  }
+});
+function toggleAll(){
+  var ws = document.querySelectorAll(".week");
+  var open = document.querySelectorAll(".week.open").length;
+  for (var i=0;i<ws.length;i++){ open === ws.length ? ws[i].classList.remove("open") : ws[i].classList.add("open"); }
+}
+function copyWeek(){
+  var cw = curWeek();
+  if (cw < 1 || cw > 12){ alert("不在 12 周范围内"); return; }
+  var P = PLAN[cw-1], t = "第 " + P.w + " 周（" + P.range + "）" + P.title + "\n" + P.goal + "\n";
+  for (var j=0;j<P.days.length;j++){
+    t += (state[P.w + "-" + j] ? "[x] " : "[ ] ") + DAY[j] + " " + P.days[j][0] + "\n";
+  }
+  navigator.clipboard.writeText(t).then(function(){ alert("本周清单已复制，粘到备忘录即可"); },
+    function(){ alert("复制失败，请手动选择"); });
+}
+function resetWeek(){
+  var cw = curWeek(), P = PLAN[cw-1];
+  if (!P) return;
+  for (var j=0;j<P.days.length;j++) delete state[cw + "-" + j];
+  save(); render();
+}
+function resetAll(){
+  if (confirm("确定清空全部打卡记录？")) { state = {}; save(); render(); }
+}
+render();
+</script>
+</body>
+</html>
